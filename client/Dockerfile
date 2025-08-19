@@ -15,4 +15,4 @@ FROM nginx
 EXPOSE 5173
 
 COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
-COPY --from=builder /app/build /usr/share/nginx/html
+COPY --from=builder /app/dist /usr/share/nginx/html
