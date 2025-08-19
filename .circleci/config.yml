@@ -1,0 +1,37 @@
+# Use the latest 2.1 version of CircleCI pipeline process engine.
+# See: https://circleci.com/docs/reference/configuration-reference
+version: 2.1
+
+jobs:
+  build_and_push:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Build production images
+          command: |
+            docker build -t ${DOCKER_ID}/multi-client ./client
+            docker build -t ${DOCKER_ID}/multi-nginx ./nginx
+            docker build -t ${DOCKER_ID}/multi-server ./server
+            docker build -t ${DOCKER_ID}/multi-worker ./worker
+      - run:
+          name: Login to Docker Hub
+          command: echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+      - run:
+          name: Push images to Docker Hub
+          command: |
+            docker push ${DOCKER_ID}/multi-client
+            docker push ${DOCKER_ID}/multi-nginx
+            docker push ${DOCKER_ID}/multi-server
+            docker push ${DOCKER_ID}/multi-worker
+
+workflows:
+  version: 2
+  build_and_deploy:
+    jobs:
+      - build_and_push:
+          filters:
+            branches:
+              only: main
