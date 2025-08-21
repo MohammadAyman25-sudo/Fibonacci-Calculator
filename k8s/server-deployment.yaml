@@ -16,4 +16,23 @@ spec:
       - name: server
         image: stephengrider/multi-server:latest
         ports:
-        - containerPort: 5000 
+        - containerPort: 5000
+        env:
+        - name: PGHOST
+          value: postgres-cluster-ip-service
+        - name: PGPORT
+          value: "5432"
+        - name: PGUSER
+          value: postgres
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pgpassword
+              key: PGPASSWORD
+        - name: PGDB
+          value: postgres
+        - name: REDIS_HOST
+          value: redis-cluster-ip-service
+        - name: REDIS_PORT
+          value: "6379"
+        
