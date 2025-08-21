@@ -1,0 +1,33 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "stephengrider-kubernetes" ]
+  pull_request:
+    branches: [ "stephengrider-kubernetes" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build the server Docker image
+      run: docker build -t stephengrider/multi-server:latest ./server
+    - name: Build the client Docker image
+      run: docker build -t stephengrider/multi-client:latest ./client
+    - name: Build the worker Docker image
+      run: docker build -t stephengrider/multi-worker:latest ./worker
+
+    - name: Authenticate repo to Docker Hub
+      run: echo "${{secrets.DOCKER_PASSWORD}}" | docker login -u mohammad2ayman7 --password-stdin
+
+    - name: Push multi-client to Dockerhub
+      run: docker push stephengrider/multi-client:latest
+    - name: Push multi-server to Dockerhub
+      run: docker push stephengrider/multi-server:latest
+    - name: Push multi-worker to Dockerhub
+      run: docker push stephengrider/multi-worker:latest
+    
